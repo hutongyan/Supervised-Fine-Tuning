@@ -21,11 +21,29 @@ Split the preprocessed dataset into two parts, leaving the last 100 instances as
 
 ### Model Fine-Tuning
 The original pre-trained model is downloaded on huggingface and loaded from a local path.
+
 Training is conducted on multi-GPU (CUDA_VISIBLE_DEVICES) using DeepSpeed for memory optimization.
+
+Uses DeepSpeed for multi-GPU training.
+
+Runs for 3 epochs with batch size 32 per GPU.
+
+The learning rate is 2e-5, optimized for Pythia-160M.
+
+Evaluation and checkpointing occur at the end of each epoch.
+
+The Trainer API from transformers is used for training.
+
+The DataCollatorForLanguageModeling ensures proper tokenization and padding.
+
+Fine-tuning begins with trainer.train(), logging loss and evaluation metrics.
+
 ```
 CUDA_VISIBLE_DEVICES=0,1 torchrun --standalone --nproc_per_node=2 train.py
 ```
 
 ## Inference and Evaluation
-We use BLEU score evaluation on test dataset measures response quality.
-In the experiment: the Average BLEU Score is 0.8371
+After training, BLEU scores are computed to evaluate model performance.
+The model generates predictions for the test set.
+Predictions are compared to reference responses using BLEU scoring.
+In my experiment: the Average BLEU Score is 0.8371
